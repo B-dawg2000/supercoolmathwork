@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐸 Brendie’s Web Surfer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --frog-green-dark: #2e8b57;
+            --frog-green-medium: #3cb371;
+            --frog-green-light: #6b8e23;
+            --frog-green-accent: #98fb98;
+            --dark-bg: #1a1a1a;
+            --text-color: #000000; /* All text set to black */
+            --frosted-bg: rgba(255, 255, 255, 0.1);
+            --frosted-border: rgba(255, 255, 255, 0.18);
+            --button-bg: rgba(144, 238, 144, 0.15);
+            --button-border: rgba(144, 238, 144, 0.3);
+            --button-hover-bg: rgba(144, 238, 144, 0.28);
+            --button-hover-border: rgba(144, 238, 144, 0.5);
+            --glow-color: rgba(0, 255, 255, 0.7);
+            --warning-glow-color: rgba(255, 68, 68, 0.5);
+            --tab-active-bg: rgba(255, 255, 255, 0.25);
+            --tab-hover-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        /* General Body and Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(-45deg, var(--frog-green-dark), var(--frog-green-medium), var(--frog-green-light), #556b2f); /* Froggy gradient */
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        /* Animated Background Keyframes */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Main Browser Container */
+        .browser-container {
+            background: var(--frosted-bg);
+            border-radius: 25px;
+            padding: 20px; /* Reduced padding for more content space */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--frosted-border);
+            text-align: center;
+            color: var(--text-color);
+            max-width: 95vw; /* Make it nearly full width of viewport */
+            width: 1200px; /* Increased width */
+            height: 90vh; /* Make it nearly full height of viewport */
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d; /* Required for VanillaTilt */
+            perspective: 1000px; /* Required for VanillaTilt */
+            animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(45deg, #00ffff, #70ffb8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 40px var(--glow-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            letter-spacing: -1.5px;
+            transition: transform 0.3s ease;
+            animation: float 4s ease-in-out infinite;
+            transform: translateZ(30px);
+        }
+
+        h1:hover {
+            transform: scale(1.02);
+        }
+
+        .warning-text {
+            font-size: 1.2em;
+            font-weight: 400;
+            text-align: center;
+            background: linear-gradient(45deg, #ff4444, #ffaa00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px var(--warning-glow-color);
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+            animation: pulseWarning 2s ease-in-out infinite;
+            transform: translateZ(20px);
+        }
+
+        /* Browser Controls (Address Bar, Nav Buttons, New Tab) */
+        .browser-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            transform: translateZ(25px);
+        }
+
+        .nav-button, .new-tab-button {
+            padding: 10px 15px;
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .nav-button:hover, .new-tab-button:hover {
+            background: var(--button-hover-bg);
+            border-color: var(--button-hover-border);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .address-bar-wrapper {
+            position: relative;
+            flex-grow: 1; /* Allows address bar to take up remaining space */
+        }
+
+        #addressBar {
+            padding: 10px 20px;
+            width: calc(100% - 40px); /* Adjust for padding */
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #addressBar::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        #addressBar:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Tabs Styling */
+        .tab-bar {
+            display: flex;
+            flex-wrap: nowrap; /* Prevent tabs from wrapping */
+            overflow-x: auto; /* Allow horizontal scrolling if many tabs */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            gap: 5px;
+            margin-bottom: 10px;
+            padding-bottom: 5px; /* For scrollbar space */
+            transform: translateZ(20px);
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-color);
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap; /* Prevent tab titles from breaking */
+            min-width: 120px; /* Minimum width for tabs */
+            max-width: 180px; /* Maximum width for tabs */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            background: var(--tab-hover-bg);
+        }
+
+        .tab.active {
+            background: var(--tab-active-bg);
+            border-color: var(--button-hover-border);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-title {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .close-tab-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: transform 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .close-tab-button:hover {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        /* Content Area (Iframe) */
+        .content-area {
+            flex-grow: 1; /* Takes up remaining vertical space */
+            background: var(--frosted-bg);
+            border-radius: 15px;
+            border: 1px solid var(--frosted-border);
+            overflow: hidden; /* Ensure iframe stays within bounds */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            transform: translateZ(10px);
+        }
+
+        .content-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white; /* Fallback for iframes */
+        }
+
+        /* Proxy Warning */
+        #proxyWarning {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #ffcccc;
+            font-size: 1em;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            display: block; /* Always visible to emphasize the direct load limitation */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        @keyframes pulseWarning {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="browser-container" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000" data-tilt-scale="1.01">
+        <h1>🐸 Brendie’s Web Surfer</h1>
+        <div class="warning-text">⚠️ WARNING: This browser functions as a direct iframe loader.</div>
+
+        <div class="browser-controls">
+            <button class="nav-button" id="backButton">back</button>
+            <button class="nav-button" id="forwardButton">forward</button>
+            <button class="nav-button" id="refreshButton">refresh</button>
+            <div class="address-bar-wrapper">
+                <input type="text" id="addressBar" placeholder="type url or search (e.g., google.com, what is a frog)">
+            </div>
+            <button class="new-tab-button" id="newTabButton">new tab</button>
+        </div>
+
+        <div class="tab-bar" id="tabBar">
+            </div>
+
+        <div class="content-area" id="contentArea">
+            </div>
+
+        <p id="proxyWarning">
+            proxy is in beta, please expect some bugs and glitches 😁
+        </p>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+    <script>
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"));
+
+        const addressBar = document.getElementById('addressBar');
+        const backButton = document.getElementById('backButton');
+        const forwardButton = document.getElementById('forwardButton');
+        const refreshButton = document.getElementById('refreshButton');
+        const newTabButton = document.getElementById('newTabButton');
+        const tabBar = document.getElementById('tabBar');
+        const contentArea = document.getElementById('contentArea');
+        const proxyWarning = document.getElementById('proxyWarning');
+
+        let tabCounter = 0;
+        let activeTabId = null;
+        const tabs = new Map(); // Map to store tabId -> { iframeElement, tabElement, history }
+
+        // --- Direct Embedding Logic (No Proxy) ---
+        // This function prepares the URL for direct loading into the iframe.
+        // It does NOT use a proxy server.
+        function getDirectLoadUrl(inputUrl) {
+            let targetUrl = inputUrl;
+            if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                // If it looks like a domain, add https://
+                if (targetUrl.includes('.')) {
+                    targetUrl = 'https://' + targetUrl;
+                } else {
+                    // If it's a keyword, perform a DuckDuckGo search
+                    targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(targetUrl)}`;
+                }
+            }
+            return targetUrl;
+        }
+
+        function createNewTab(url = '') {
+            const tabId = `tab_${tabCounter++}`;
+
+            // Create Tab Element
+            const tabElement = document.createElement('div');
+            tabElement.classList.add('tab');
+            tabElement.id = `tab_${tabId}`;
+            tabElement.innerHTML = `
+                <span class="tab-title">new tab</span>
+                <button class="close-tab-button">x</button>
+            `;
+            tabBar.appendChild(tabElement);
+
+            // Create Iframe Element
+            const iframeElement = document.createElement('iframe');
+            iframeElement.classList.add('browser-iframe');
+            iframeElement.id = `iframe_${tabId}`;
+            iframeElement.style.display = 'none'; // Hidden initially
+            contentArea.appendChild(iframeElement);
+
+            // Store tab info
+            const tabData = {
+                iframeElement: iframeElement,
+                tabElement: tabElement,
+                history: [],
+                historyIndex: -1,
+                currentDisplayedUrl: '' // This will be the human-readable URL or empty for new tabs
+            };
+            tabs.set(tabId, tabData);
+
+            // Event Listeners for new tab
+            tabElement.querySelector('.tab-title').addEventListener('click', () => {
+                switchTab(tabId);
+            });
+            tabElement.querySelector('.close-tab-button').addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent tab activation
+                closeTab(tabId);
+            });
+
+            // When iframe loads, update tab title and history
+            iframeElement.addEventListener('load', () => {
+                const tabData = tabs.get(tabId);
+                let newTitle = 'Untitled';
+                let loadedUrl = iframeElement.src; // This will be the directly loaded URL
+
+                try {
+                    // Try to get title from inside the iframe (will often fail cross-origin)
+                    newTitle = iframeElement.contentDocument.title || 'Untitled';
+                } catch (e) {
+                    // If cross-origin, use hostname or a generic title
+                    try {
+                        newTitle = new URL(loadedUrl).hostname || 'unknown site';
+                    } catch (urlError) {
+                        newTitle = 'unknown site';
+                    }
+                }
+
+                tabElement.querySelector('.tab-title').textContent = newTitle;
+                tabData.currentDisplayedUrl = loadedUrl; // Store the directly loaded URL
+
+                // Update internal history
+                if (loadedUrl && loadedUrl !== 'about:blank' && loadedUrl !== tabData.history[tabData.historyIndex]) {
+                    // If we've navigated back and then typed a new URL, clear future history
+                    tabData.history = tabData.history.slice(0, tabData.historyIndex + 1);
+                    tabData.history.push(loadedUrl);
+                    tabData.historyIndex = tabData.history.length - 1;
+                }
+
+                // Update address bar only if this is the active tab
+                if (activeTabId === tabId) {
+                    addressBar.value = loadedUrl === 'about:blank' ? '' : loadedUrl; // Clear for about:blank
+                }
+                updateNavButtonStates();
+            });
+
+            // Load initial URL if provided and not 'about:blank'
+            if (url && url !== 'about:blank') {
+                const directUrl = getDirectLoadUrl(url);
+                iframeElement.src = directUrl;
+                tabData.currentDisplayedUrl = url; // Store original URL for display
+                tabElement.querySelector('.tab-title').textContent = 'loading...';
+            } else { // For about:blank or no URL
+                tabData.currentDisplayedUrl = '';
+                iframeElement.src = 'about:blank';
+                tabElement.querySelector('.tab-title').textContent = 'new tab';
+            }
+
+            switchTab(tabId); // Activate the new tab
+        }
+
+        function switchTab(tabId) {
+            if (activeTabId === tabId) return;
+
+            // Deactivate current tab
+            if (activeTabId && tabs.has(activeTabId)) {
+                tabs.get(activeTabId).tabElement.classList.remove('active');
+                tabs.get(activeTabId).iframeElement.style.display = 'none';
+            }
+
+            // Activate new tab
+            const newTabData = tabs.get(tabId);
+            if (newTabData) {
+                newTabData.tabElement.classList.add('active');
+                newTabData.iframeElement.style.display = 'block';
+                activeTabId = tabId;
+                addressBar.value = newTabData.currentDisplayedUrl === 'about:blank' ? '' : newTabData.currentDisplayedUrl; // Update address bar with human-readable URL
+                updateNavButtonStates();
+            }
+        }
+
+        function closeTab(tabId) {
+            if (!tabs.has(tabId)) return;
+
+            const tabData = tabs.get(tabId);
+            tabBar.removeChild(tabData.tabElement);
+            contentArea.removeChild(tabData.iframeElement);
+            tabs.delete(tabId);
+
+            if (activeTabId === tabId) {
+                // If the closed tab was active, switch to another or open a new one
+                const remainingTabIds = Array.from(tabs.keys());
+                if (remainingTabIds.length > 0) {
+                    switchTab(remainingTabIds[remainingTabIds.length - 1]); // Switch to last remaining tab
+                } else {
+                    activeTabId = null; // No tabs left
+                    addressBar.value = ''; // Clear address bar
+                    createNewTab('about:blank'); // Open a blank new tab if all are closed
+                }
+            }
+            updateNavButtonStates();
+        }
+
+        function updateNavButtonStates() {
+            if (!activeTabId || !tabs.has(activeTabId)) {
+                backButton.disabled = true;
+                forwardButton.disabled = true;
+                refreshButton.disabled = true;
+                return;
+            }
+            const tabData = tabs.get(activeTabId);
+            backButton.disabled = tabData.historyIndex <= 0;
+            forwardButton.disabled = tabData.historyIndex >= tabData.history.length - 1;
+            refreshButton.disabled = false;
+        }
+
+        // --- Event Handlers ---
+        addressBar.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const query = this.value.trim();
+                if (query && activeTabId) {
+                    const directUrl = getDirectLoadUrl(query);
+                    const iframe = tabs.get(activeTabId).iframeElement;
+                    iframe.src = directUrl;
+                    tabs.get(activeTabId).currentDisplayedUrl = query; // Store original query for display
+                    tabs.get(activeTabId).tabElement.querySelector('.tab-title').textContent = 'loading...';
+                }
+            }
+        });
+
+        backButton.addEventListener('click', () => {
+            if (activeTabId) {
+                const tabData = tabs.get(activeTabId);
+                if (tabData.historyIndex > 0) {
+                    tabData.historyIndex--;
+                    const prevUrl = tabData.history[tabData.historyIndex];
+                    tabData.iframeElement.src = prevUrl; // Go back in iframe history
+                    tabData.currentDisplayedUrl = prevUrl; // Update display URL
+                    addressBar.value = prevUrl;
+                    updateNavButtonStates();
+                }
+            }
+        });
+
+        forwardButton.addEventListener('click', () => {
+            if (activeTabId) {
+                const tabData = tabs.get(activeTabId);
+                if (tabData.historyIndex < tabData.history.length - 1) {
+                    tabData.historyIndex++;
+                    const nextUrl = tabData.history[tabData.historyIndex];
+                    tabData.iframeElement.src = nextUrl; // Go forward in iframe history
+                    tabData.currentDisplayedUrl = nextUrl; // Update display URL
+                    addressBar.value = nextUrl;
+                    updateNavButtonStates();
+                }
+            }
+        });
+
+        refreshButton.addEventListener('click', () => {
+            if (activeTabId) {
+                const iframe = tabs.get(activeTabId).iframeElement;
+                try {
+                    iframe.contentWindow.location.reload(true); // Force reload
+                } catch (e) {
+                    // Fallback for cross-origin iframes where direct reload is blocked
+                    console.warn("Could not directly reload iframe due to cross-origin restrictions. Re-setting src.");
+                    iframe.src = iframe.src; // Re-setting src is a common workaround
+                }
+            }
+        });
+
+        newTabButton.addEventListener('click', () => {
+            createNewTab('about:blank');
+        });
+
+        // Initial tab creation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            createNewTab('about:blank'); // Start with one blank tab
+        });
+    </script>
+</body>
+</html>
